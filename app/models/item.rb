@@ -4,7 +4,7 @@ class Item < ActiveRecord::Base
   has_one :exemplify, :dependent => :destroy
   has_one :manifestation, :through => :exemplify
 
-  validates :item_identifier, :allow_blank => true, :uniqueness => true, :format => {:with => /\A[0-9A-Za-z_]+\Z/}
+  validates :item_identifier, :allow_blank => true, :uniqueness => true, :format => {:with => /\A[0-9A-Za-z_@]+\Z/}
   validates :url, :url => true, :allow_blank => true, :length => {:maximum => 255}
   validate :check_acquired_at_string
   validates_date :acquired_at, :allow_blank => true
