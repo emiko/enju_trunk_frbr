@@ -4,7 +4,16 @@ class Exemplify < ActiveRecord::Base
 
   validates_associated :manifestation, :item
   validates_presence_of :manifestation_id, :item_id
-  validates_uniqueness_of :item_id
+  # validates_uniqueness_of :item_id
+
+  # TODO
+  logger.error "############### Frbr_exemplify! ###############"
+  validates_uniqueness_of :manifestation_id,
+    :if => proc { logger.error SystemConfiguration.get("manifestation.has_one_item");logger.error "############################";SystemConfiguration.get("manifestation.has_one_item") }
+  validates_uniqueness_of :item_id,
+    :if => proc { logger.error SystemConfiguration.get("manifestation.has_one_item");logger.error "############################";SystemConfiguration.get("manifestation.has_one_item") }
+  # TODO
+
   after_save :reindex
   after_destroy :reindex
   after_create :create_lending_policy, :unless => proc{SystemConfiguration.isWebOPAC}
