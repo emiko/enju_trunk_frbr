@@ -2,14 +2,14 @@ class Exemplify < ActiveRecord::Base
   belongs_to :manifestation
   belongs_to :item
 
-  validates_associated :manifestation, :item
-  validates_presence_of :manifestation_id, :item_id
+  validates_associated :manifestation # , :item
+  validates_presence_of :manifestation_id # , :item_id
   validates_uniqueness_of :item_id
 
   # TODO
-  logger.error "############### Frbr_exemplify! ###############"
+  logger.error "############ exemplify_validates ###########"
   validates_uniqueness_of :manifestation_id,
-    :if => proc { logger.error SystemConfiguration.get("manifestation.has_one_item");logger.error "############################";SystemConfiguration.get("manifestation.has_one_item") }
+    :if => proc { SystemConfiguration.get("manifestation.has_one_item") }
   # TODO
 
   after_save :reindex
