@@ -17,7 +17,10 @@ class Manifestation < ActiveRecord::Base
   validates :isbn, :uniqueness => true, :allow_blank => true, :unless => proc{ |manifestation| manifestation.series_statement }, :if => proc{ SystemConfiguration.get("manifestation.isbn_unique") }
   validates :nbn, :uniqueness => true, :allow_blank => true
   validates :identifier, :uniqueness => true, :allow_blank => true
-  validates :serial_number, :numericality => :only_integer, :if => proc{ |manifestation| manifestation.not_set_serial_number }
+  validates :serial_number, 
+    :numericality => :only_integer, 
+    :allow_blank => true, 
+    :if => proc{ |manifestation| manifestation.not_set_serial_number }
   validates :access_address, :url => true, :allow_blank => true, :length => {:maximum => 255}
   validate :check_isbn, :check_issn, :check_lccn, :unless => :during_import
 
