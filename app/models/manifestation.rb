@@ -17,6 +17,10 @@ class Manifestation < ActiveRecord::Base
   validates :isbn, :uniqueness => true, :allow_blank => true, :unless => proc{ |manifestation| manifestation.series_statement }, :if => proc{ SystemConfiguration.get("manifestation.isbn_unique") }
   validates :nbn, :uniqueness => true, :allow_blank => true
   validates :identifier, :uniqueness => true, :allow_blank => true
+  validates :serial_number, 
+    :numericality => :only_integer, 
+    :allow_blank => true, 
+    :if => proc{ |manifestation| manifestation.not_set_serial_number }
   validates :access_address, :url => true, :allow_blank => true, :length => {:maximum => 255}
   validate :check_isbn, :check_issn, :check_lccn, :unless => :during_import
 
@@ -25,11 +29,12 @@ class Manifestation < ActiveRecord::Base
   before_validation :convert_isbn
   before_create :set_digest
   after_create :clear_cached_numdocs
-  before_save :set_date_of_publication, :set_new_serial_number, :set_volume_issue_number
+  before_save :set_date_of_publication, :set_volume_issue_number, :set_date_of_discontinuance
+  before_save :set_serial_number, :unless => proc{ |manifestation| manifestation.not_set_serial_number }
   before_save :delete_attachment?
   normalize_attributes :identifier, :pub_date, :isbn, :issn, :nbn, :lccn, :original_title
   attr_accessible :delete_attachment
-  attr_accessor :series_statement_id
+  attr_accessor :series_statement_id, :not_set_serial_number
   attr_protected :periodical_master
 
   def check_pub_date
@@ -141,6 +146,27 @@ class Manifestation < ActiveRecord::Base
     self.date_of_publication = date
   end
 
+  def set_date_of_discontinuance
+    return if dis_date.blank?
+    date = dis_date.gsub(/(\.|\,|\/)/, '-')
+    begin
+      date = Time.zone.parse("#{date}")
+    rescue ArgumentError
+      begin
+        date = Time.zone.parse("#{date}-01")
+        date = date.end_of_month
+      rescue ArgumentError
+        begin
+          date = Time.zone.parse("#{date}-12-01")
+          date = date.end_of_month
+        rescue ArgumentError
+          nil
+        end
+      end
+    end
+    self.date_of_discontinuance = date
+  end
+
   def self.cached_numdocs
     Rails.cache.fetch("manifestation_search_total"){ 
       Manifestation.search do
@@ -178,7 +204,7 @@ class Manifestation < ActiveRecord::Base
     title
   end
 
-  def set_new_serial_number
+  def set_serial_number
     if self.serial_number_string.blank? or self.serial_number_string.tr('０-９','0-9').match(/\D/)
       self.serial_number = nil
     else
