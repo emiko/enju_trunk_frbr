@@ -219,10 +219,10 @@ class Manifestation < ActiveRecord::Base
       self.volume_number = self.volume_number_string.tr('０-９','0-9').to_i 
     end
 
-    if self.issue_number_string.blank? or self.issue_number_string.tr('０-９','0-9').match(/\D/)
-      self.issue_number = nil
-    else
+    if self.issue_number_string.tr('０-９','0-9').match(/\d/)
       self.issue_number = self.issue_number_string.tr('０-９','0-9').to_i
+    else
+      self.issue_number = Date::ABBR_MONTHNAMES.index(self.issue_number_string) 
     end
     #if self.volume_number && self.volume_number.to_s.length > 9
     #  self.volume_number = nil
