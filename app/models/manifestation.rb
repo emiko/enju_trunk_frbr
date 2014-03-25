@@ -219,14 +219,24 @@ class Manifestation < ActiveRecord::Base
       self.volume_number = self.volume_number_string.tr('０-９','0-9').to_i 
     end
 
-    if self.issue_number_string.blank? or self.issue_number_string.tr('０-９','0-9').match(/\D/)
-      self.issue_number = nil
-    else
+    if self.issue_number_string.tr('０-９','0-9').match(/\d/)
       self.issue_number = self.issue_number_string.tr('０-９','0-9').to_i
+    else
+      self.issue_number = Date::ABBR_MONTHNAMES.index(self.issue_number_string) 
     end
-    #if self.volume_number && self.volume_number.to_s.length > 9
-    #  self.volume_number = nil
-    #end
+  end
+
+  def set_next_number(current_volume, current_issue)
+    if self.series_statement && self.series_statement.try(:sequence_pattern)
+      logger.error "******** get next number"
+      next_numbers = self.series_statement.sequence_pattern.try(:get_next_number, current_volume, current_issue)
+      logger.error next_numbers
+      self.volume_number_string = next_numbers[0]
+      self.issue_number_string = next_numbers[1]
+    elsif current_issue
+      self.issue_number_string = current_issue ? current_issue + 1 : nil
+    end
+    self.serial_number_string = self.serial_number_string.try(:match, /\d/) ? self.serial_number_string.to_i + 1 : nil rescue nil
   end
 
   def title
@@ -245,19 +255,6 @@ class Manifestation < ActiveRecord::Base
     end
   end
 
-=begin
-  def volume_number
-    volume_number_string.gsub(/\D/, ' ').split(" ") if volume_number_string
-  end
-
-  def issue_number
-    issue_number_string.gsub(/\D/, ' ').split(" ") if issue_number_string
-  end
-
-  def serial_number
-    serial_number_string.gsub(/\D/, ' ').split(" ") if serial_number_string
-  end
-=end
 
   def self.find_by_isbn(isbn)
     lisbn = Lisbn.new(isbn)
