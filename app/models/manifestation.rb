@@ -207,7 +207,7 @@ class Manifestation < ActiveRecord::Base
   def set_serial_number
     if self.serial_number_string.blank? or self.serial_number_string.tr('０-９','0-9').match(/\D/)
       self.serial_number = nil
-    else
+    elsif self.serial_number_string
       self.serial_number = self.serial_number_string.tr('０-９','0-9').to_i
     end
   end
