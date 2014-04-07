@@ -2,7 +2,7 @@ class Exemplify < ActiveRecord::Base
   belongs_to :manifestation
   belongs_to :item
 
-  validates_associated :manifestation
+  validates_associated :manifestation, :item
   validates_presence_of :manifestation_id, :item_id
   validates_uniqueness_of :item_id
 
