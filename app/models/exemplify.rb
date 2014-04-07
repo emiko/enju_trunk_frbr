@@ -2,9 +2,17 @@ class Exemplify < ActiveRecord::Base
   belongs_to :manifestation
   belongs_to :item
 
-  validates_associated :manifestation, :item
+  validates_associated :manifestation
   validates_presence_of :manifestation_id, :item_id
   validates_uniqueness_of :item_id
+
+=begin
+  # TODO
+  validates_uniqueness_of :manifestation_id,
+    :if => proc { SystemConfiguration.get("manifestation.has_one_item") }
+  # TODO
+=end
+
   after_save :reindex
   after_destroy :reindex
   after_create :create_lending_policy, :unless => proc{SystemConfiguration.isWebOPAC}
