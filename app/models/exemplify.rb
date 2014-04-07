@@ -8,7 +8,6 @@ class Exemplify < ActiveRecord::Base
 
 =begin
   # TODO
-  logger.error "############ exemplify_validates ###########"
   validates_uniqueness_of :manifestation_id,
     :if => proc { SystemConfiguration.get("manifestation.has_one_item") }
   # TODO
