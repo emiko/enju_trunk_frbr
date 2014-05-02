@@ -208,7 +208,7 @@ class Manifestation < ActiveRecord::Base
     if self.serial_number_string && self.serial_number_string.tr('０-９','0-9').match(/\d/)
       self.serial_number = self.serial_number_string.tr('０-９','0-9').to_i
     else
-      self.serial_number = nil
+#      self.serial_number = nil
     end
   end
 
@@ -230,12 +230,14 @@ class Manifestation < ActiveRecord::Base
     if self.series_statement && self.series_statement.try(:sequence_pattern)
       next_numbers = self.series_statement.sequence_pattern.try(:get_next_number, current_volume, current_issue)
       logger.error next_numbers
-      self.volume_number_string = next_numbers[0]
-      self.issue_number_string = next_numbers[1]
+      self.volume_number_string = next_numbers[0].try(:to_s)
+      self.issue_number_string = next_numbers[1].try(:to_s)
     elsif current_issue
-      self.issue_number_string = current_issue ? current_issue + 1 : nil
+      issue_num = current_issue ? current_issue + 1 : nil
+      self.issue_number_string = issue_num.to_s
     end
-    self.serial_number_string = self.serial_number_string.try(:match, /\d/) ? self.serial_number_string.to_i + 1 : nil rescue nil
+    serial_num = self.serial_number_string.try(:match, /\d/) ? self.serial_number_string.to_i + 1 : nil rescue nil
+    self.serial_number_string = serial_num.to_s if serial_num
   end
 
   def title
