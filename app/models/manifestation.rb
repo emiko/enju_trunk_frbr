@@ -201,6 +201,13 @@ class Manifestation < ActiveRecord::Base
     #title << original_title.wakati
     #title << title_transcription.wakati rescue nil
     #title << title_alternative.wakati rescue nil
+    if SystemConfiguration.get('manifestation.use_titles')
+      work_has_titles.each do |t|
+        title << t.manifestation_title.title.to_s.strip
+        title << t.manifestation_title.title_transcription.to_s.strip
+        title << t.manifestation_title.title_alternative.to_s.strip
+      end
+    end
     title
   end
 
