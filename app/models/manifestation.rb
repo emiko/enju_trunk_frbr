@@ -5,8 +5,7 @@ class Manifestation < ActiveRecord::Base
   has_many :creates, :dependent => :destroy, :foreign_key => 'work_id'
   has_many :realizes, :dependent => :destroy, :foreign_key => 'expression_id'
   has_many :produces, :dependent => :destroy, :foreign_key => 'manifestation_id'
-  has_many :exemplifies, :foreign_key => 'manifestation_id'
-  has_many :items, :through => :exemplifies #, :foreign_key => 'manifestation_id'
+  has_many :items
   has_many :children, :foreign_key => 'parent_id', :class_name => 'ManifestationRelationship', :dependent => :destroy
   has_many :parents, :foreign_key => 'child_id', :class_name => 'ManifestationRelationship', :dependent => :destroy
   has_many :derived_manifestations, :through => :children, :source => :child
@@ -327,7 +326,6 @@ end
 #  edition                         :integer
 #  note                            :text
 #  produces_count                  :integer         default(0), not null
-#  exemplifies_count               :integer         default(0), not null
 #  embodies_count                  :integer         default(0), not null
 #  work_has_subjects_count         :integer         default(0), not null
 #  repository_content              :boolean         default(FALSE), not null
