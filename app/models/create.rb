@@ -3,7 +3,7 @@ class Create < ActiveRecord::Base
 
   validates_associated :work
   validates_presence_of :agent_id, :work_id
-  validates_uniqueness_of :work_id, :scope => :agent_id
+  validates_uniqueness_of :work_id, :scope => [:agent_id, :create_type_id]
 
   acts_as_list :scope => :work
   attr_accessible :work_id, :agent_id, :work, :agent

@@ -5,7 +5,7 @@ class Produce < ActiveRecord::Base
 
   validates_associated :agent, :manifestation
   validates_presence_of :agent, :manifestation
-  validates_uniqueness_of :manifestation_id, :scope => :agent_id
+  validates_uniqueness_of :manifestation_id, :scope => [:agent_id, :produce_type_id]
   after_save :reindex
   after_destroy :reindex
 

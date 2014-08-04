@@ -3,7 +3,7 @@ class Realize < ActiveRecord::Base
 
   validates_associated :expression
   validates_presence_of :agent, :expression
-  validates_uniqueness_of :expression_id, :scope => :agent_id
+  validates_uniqueness_of :expression_id, :scope => [:agent_id, :realize_type_id]
 
   acts_as_list :scope => :expression
   attr_accessible :expression, :agent, :expression_id, :agent_id
