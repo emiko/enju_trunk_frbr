@@ -125,22 +125,33 @@ class Manifestation < ActiveRecord::Base
   end
 
   def set_date_of_publication
-    return if pub_date.blank?
+    return if pub_date.gsub(' ','').blank?
+
+    year = month = day = nil
     date = pub_date.gsub(/(\.|\,|\/)/, '-')
-    begin
-      date = Time.zone.parse("#{date}")
-    rescue ArgumentError
-      begin
-        date = Time.zone.parse("#{date}-01")
-        date = date.end_of_month
-      rescue ArgumentError
-        begin
-          date = Time.zone.parse("#{date}-12-01")
-          date = date.end_of_month
-        rescue ArgumentError
-          nil
+
+    if date =~ /^\d+(-\d{0,2}){0,2}$/
+      if date.include?('-')
+        date_a = date.split('-')
+        year   = date_a[0].to_i
+        month  = date_a[1].to_i
+        day    = date_a[2].to_i
+      else
+        if date.length == 4 || date.length == 6 || date.length == 8
+          year  = date.slice(0, 4).to_i
+          month = date.slice(4, 2).to_i
+          day   = date.slice(6, 2).to_i
         end
       end
+    end
+    year  = nil if year  == 0
+    month = nil if month == 0
+    day   = nil if day   == 0
+
+    month = 12 unless month
+    date = Time.local(year, month, day) rescue nil
+    if date
+      date = date.end_of_month unless day
     end
     self.date_of_publication = date
   end
