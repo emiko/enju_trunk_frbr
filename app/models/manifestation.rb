@@ -125,10 +125,10 @@ class Manifestation < ActiveRecord::Base
   end
 
   def set_date_of_publication
-    return if pub_date.gsub(' ','').blank?
+    return if pub_date.blank?
 
     year = month = day = nil
-    date = pub_date.gsub(/(\.|\,|\/)/, '-')
+    date = pub_date.gsub(' ', '').gsub(/(\.|\,|\/)/, '-')
 
     if date =~ /^\d+(-\d{0,2}){0,2}$/
       if date.include?('-')
