@@ -222,7 +222,7 @@ class Manifestation < ActiveRecord::Base
   end
 
   def set_serial_number
-    if self.serial_number_string && self.serial_number_string.tr('０-９','0-9').match(/\d/)
+    if self.serial_number_string && self.serial_number_string.tr('０-９','0-9').match(/\d/) && self.serial_number_string.size <= 18
       self.serial_number = self.serial_number_string.tr('０-９','0-9').to_i
     else
 #      self.serial_number = nil
@@ -230,13 +230,13 @@ class Manifestation < ActiveRecord::Base
   end
 
   def set_volume_issue_number
-    if self.volume_number_string && self.volume_number_string.tr('０-９','0-9').match(/\d/)
+    if self.volume_number_string && self.volume_number_string.tr('０-９','0-9').match(/\d/) && self.volume_number_string.size <= 18
       self.volume_number = self.volume_number_string.tr('０-９','0-9').to_i 
     else
       self.volume_number = nil
     end
 
-    if self.issue_number_string && self.issue_number_string.tr('０-９','0-9').match(/\d/)
+    if self.issue_number_string && self.issue_number_string.tr('０-９','0-9').match(/\d/) && self.issue_number_string.size <= 18
       self.issue_number = self.issue_number_string.tr('０-９','0-9').to_i
     elsif self.issue_number_string 
       self.issue_number = Date::ABBR_MONTHNAMES.index(self.issue_number_string) 
