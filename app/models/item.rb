@@ -4,6 +4,7 @@ class Item < ActiveRecord::Base
   belongs_to :manifestation
 
   validates :item_identifier, :allow_blank => true, :uniqueness => true, :format => {:with => /\A[0-9A-Za-z_@]+\Z/}
+  validates :identifier, :allow_blank => true, :uniqueness => true
   validates :url, :url => true, :allow_blank => true, :length => {:maximum => 255}
   validate :check_acquired_at_string
   validates_date :acquired_at, :allow_blank => true
@@ -11,6 +12,7 @@ class Item < ActiveRecord::Base
   normalize_attributes :item_identifier
 
   before_save :set_acquired_at
+  before_validation :set_identifier, :unless => proc{SystemConfiguration.get('item.use_different_identifier')}
   after_update :update_bindered, :if => proc{|item| item.bookbinder}
   attr_accessor :library_id, :manifestation_id, :use_restriction_id
 
@@ -67,6 +69,10 @@ class Item < ActiveRecord::Base
       end
     end
     self.acquired_at = date
+  end
+
+  def set_identifier
+    self.identifier = self.item_identifier
   end
 
   def update_bindered
