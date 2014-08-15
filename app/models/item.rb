@@ -3,7 +3,7 @@ class Item < ActiveRecord::Base
   scope :recent, where(['items.created_at >= ?', Time.zone.now.months_ago(1)])
   belongs_to :manifestation
 
-  validates :item_identifier, :allow_blank => true, :uniqueness => true, :format => {:with => /\A[0-9A-Za-z_@]+\Z/}
+  validates :item_identifier, :allow_blank => true, :uniqueness => true, :format => {:with => eval(Setting.validator.item_identifier_format)}
   validates :identifier, :allow_blank => true, :uniqueness => true
   validates :url, :url => true, :allow_blank => true, :length => {:maximum => 255}
   validate :check_acquired_at_string
