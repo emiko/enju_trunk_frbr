@@ -53,6 +53,7 @@ class Item < ActiveRecord::Base
 
   def set_acquired_at
     return if acquired_at_string.blank?
+    return if SystemConfiguration.get('attributes.item.acquired_at')
     begin
       date = Time.zone.parse("#{acquired_at_string}")
     rescue ArgumentError
