@@ -14,7 +14,6 @@ class Manifestation < ActiveRecord::Base
 
   validates_presence_of :original_title
   validates :isbn, :uniqueness => true, :allow_blank => true, :unless => proc{ |manifestation| manifestation.series_statement }, :if => proc{ SystemConfiguration.get("manifestation.isbn_unique") }
-  validates :nbn, :uniqueness => true, :allow_blank => true
   validates :identifier, :uniqueness => true, :allow_blank => true
   validates :serial_number, 
     :numericality => :only_integer, 
