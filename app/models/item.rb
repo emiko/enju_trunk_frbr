@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 class Item < ActiveRecord::Base
   scope :recent, where(['items.created_at >= ?', Time.zone.now.months_ago(1)])
-  belongs_to :manifestation
+  belongs_to :manifestation, touch: true
 
   validates :item_identifier, :allow_blank => true, :uniqueness => true, :format => {:with => eval(Setting.validator.item_identifier_format)}
   validates :identifier, :allow_blank => true, :uniqueness => true
